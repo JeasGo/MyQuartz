@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+	<context:component-scan base-package="cn.jeas.quartz.service"></context:component-scan>
+	
+	<!-- <bean id="helloJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="cn.jeas.quartz.job.HelloJob"></property>
+	</bean> -->
+
+	<!-- 第一步：配置JobDetail -->
+	<bean id="helloJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<!-- 注入job的类型 -->
+		<property name="jobClass" value="cn.jeas.quartz.job.HelloJob" />
+	</bean>
+	<!-- 第二步：配置trigger :简单任务-->
+	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<!-- 注入 JobDetail任务-->
+		<property name="jobDetail" ref="helloJobDetail" />
+		<!-- 服务启动后第一次执行的间隔时间：毫秒 -->
+		<property name="startDelay" value="5000" />
+		<!-- 每隔多长时间执行一次 -->
+		<property name="repeatInterval" value="5000" />
+	</bean>
+	<!-- <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="helloJobDetail"></property>
+		<property name="cronExpression" value="0/5 * * * * ?"></property>
+	</bean> -->
+	<!-- 第三步：配置Scheduler -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<!-- 注入覆盖默认的jobFactory -->
+		<property name="jobFactory" ref="jobFactory"/>		
+		<property name="triggers">
+			<list>
+				<!-- 注入trigger -->
+				<ref bean="simpleTrigger" />
+			</list>
+		</property>
+	</bean>
+
+</beans>
